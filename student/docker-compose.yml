@@ -1,0 +1,34 @@
+version: '3'
+services:
+   mongo:
+    image: mongo:5.0
+    container_name: mongo-container
+    ports:
+    - 27017:27017
+    networks:
+      - my_custom_network
+    volumes:
+    - mongo-data:/data/db
+    - ./db-backups:/var/lib/mongodata/backups    
+   springboot-app:
+    build: .
+    container_name: spring-boot-container
+    ports:
+    - 8085:8085
+    networks:
+      - my_custom_network
+    depends_on:
+    - mongo
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/student-management
+    volumes:
+    - app-data:/data/app
+    - ./logs:/var/log/spring-boot-app/logs 
+    
+      
+networks:
+  my_custom_network:
+      
+volumes:
+  mongo-data:
+  app-data:
